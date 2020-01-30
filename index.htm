@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>Namirial to csv!</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Namirial to csv!</h1>
+      <form>
+        <div class="form-group form-check">
+          <input type="checkbox" class="form-check-input" id="buy">
+          <label class="form-check-label" for="exampleCheck1">Is buy</label>
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1">Copy and paste Namirial text export</label>
+          <textarea class="form-control input" id="exampleFormControlTextarea1" rows="3" style="font-family: monospace;height: 500px;"></textarea>
+        </div>
+        <button type="button" class="btn btn-primary maketable">MAKE TABLE</button>
+      </form>    
+      <div class="output mt-5">
+
+      </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script>
+      $(".maketable").click(() =>{
+        var html = "<table class=\"table-bordered\">";
+        //var html = "<table>";
+        var strA = $(".input").val()
+        .replace(new RegExp("!\n             EM.", 'g'), "!EM.")
+        .replace(new RegExp("!\n      !     !", 'g'), "!")
+        .replace(new RegExp("!\n             ", 'g'), "!")
+        .split("------+-----+------------------------+-------+-------+------+-----------+----------------------------------------------+------+");
+        console.log(strA);
+        var str = strA[1];
+        for(var a=2;a<strA.length;a+=3) {
+          str+= strA[a];
+        }
+        str = str
+        .replace(new RegExp("\n\n      !     !                        !       !       !      !           !                                              !      !", 'g'), "")
+        .replace("\n\n", "\n");
+
+        strA = str.split("\n");
+        console.log(str);
+        //console.log(strA);
+        var indices = [0];
+        var master = "------+-----+------------------------+-------+-------+------+-----------+--------------+-------------+---------------+-+------+------------------------+";
+        for(var i=0; i<master.length;i++) {
+            if (master[i] === "+") indices.push(i+1);
+        }
+        console.log(indices);
+        html+= "<thead>";
+        html+= "<tr class=\""+(a)+"\">";
+          html+= "<th>ID</th>";
+        console.log("stocazzostocazzostocazzostocazzostocazzo");
+        for(var i=0; i<indices.length-1;i++) {
+          //console.log(indices[i]+","+(indices[i+1]-1));
+          html+= "<th>"+strA[1].substring(indices[i],indices[i+1]-1).trim()+" "+strA[2].substring(indices[i],indices[i+1]-1).trim()+"</th>";
+        }
+        html+= "</tr>";
+        html+= "</thead>";
+        html+= "<tbody>";
+        var conta = 0;
+        for(var a=4;a<strA.length;a++) {
+          var row = "";
+          var rowerr = "";
+          var check = false;
+          for(var i=0; i<indices.length-1;i++) {
+            rowerr += "<td></td>"
+            row+= "<td>";
+            switch (i) {
+              case 0:
+              case 5:
+                var dd = strA[a].substring(indices[i],indices[i+1]-1).trim();
+                if (dd) {
+                  row+= dd.substring(0,2)+"/"+dd.substring(2,4)+"/20"+dd.substring(4,6)
+                }
+                break;
+              case 7:
+              case 8:
+              case 9:
+                var dd = strA[a].substring(indices[i],indices[i+1]-1).trim();
+                if (dd) {
+                  row+= dd.replace(".","")
+                }
+                break;
+              case 1:
+                var dd = strA[a].substring(indices[i],indices[i+1]-1).trim();
+                if (dd == "200" || dd == "40200") {
+                  check = true;
+                }
+                row+= dd;
+                break;
+              case 11:
+                var dd = strA[a].substring(indices[i],indices[i+1]-1).trim();
+                if (!dd) {
+                  dd = strA[a].substring(indices[i+1],indices[i+2]-1).trim().split(" ")[3];
+                }
+                row+= dd;
+                break;
+              default:
+                row+= strA[a].substring(indices[i],indices[i+1]-1).trim();
+                break;
+            }
+            row+= "</td>";
+          }
+          if (row!=rowerr && (!$("#buy").is(":checked") || check)) {
+            conta++;
+            html+= "<tr>";
+            html+= "<td>"+conta+"</td>";
+            html+= row;
+            html+= "</tr>";
+            html+= "</tr>";
+          }
+        }
+        html+= "</tbody>";
+        html+= "</table>";
+        $(".output").html(html);
+      });
+    </script>
+  </body>
+</html>
